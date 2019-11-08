@@ -15,7 +15,7 @@ public class Converter
     {
         try
         {
-            File file = new File("/home/swapnil/Desktop/form3.pdf");
+            File file = new File(args[1]);
             PDDocument document = PDDocument.load(file);
             
             byte[] xda = document.getDocumentCatalog().getAcroForm().getXFA().getBytes();
@@ -25,7 +25,7 @@ public class Converter
             final Pattern pattern = Pattern.compile("<xfa:data\n>(.+?)</xfa:data", Pattern.DOTALL);
             final Matcher matcher = pattern.matcher(xmlStr);
             matcher.find();
-            String xfaData = matcher.group(1).replace("\n", " ");
+            String xfaData = matcher.group(1).replace("\n", " ").replace("\r", "");
             
             XmlMapper xmlMapper = new XmlMapper();
             JsonNode node = xmlMapper.readTree(xfaData);
