@@ -5,9 +5,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import org.json.JSONObject;
+import org.json.XML;
 
 public class Converter
 {
@@ -15,26 +14,22 @@ public class Converter
     {
         try
         {
-            File file = new File(args[1]);
+            File file = new File(args[0]);
             PDDocument document = PDDocument.load(file);
             
             byte[] xda = document.getDocumentCatalog().getAcroForm().getXFA().getBytes();
             
             String xmlStr = new String(xda);
-            
+
             final Pattern pattern = Pattern.compile("<xfa:data\n>(.+?)</xfa:data", Pattern.DOTALL);
             final Matcher matcher = pattern.matcher(xmlStr);
             matcher.find();
             String xfaData = matcher.group(1).replace("\n", " ").replace("\r", "");
             
-            XmlMapper xmlMapper = new XmlMapper();
-            JsonNode node = xmlMapper.readTree(xfaData);
-            System.out.println(node);
-            
+            JSONObject xmlJSONObj = XML.toJSONObject(xfaData, true);
+            String output = xmlJSONObj.toString(0);
+            System.out.println(output);            
         }
-        catch(Exception ie)
-        {
-            ie.printStackTrace();
-        }
+        catch(Exception ie){}
     }
 }
